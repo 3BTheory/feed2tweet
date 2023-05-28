@@ -1,24 +1,9 @@
 import { FeedManager } from "./feedManager";
 import { SheetManager } from "./sheetManager";
 
-function scriptPropNotFound(propName: string): void {
-  console.error("Failed to get the script property " + propName);
-}
-
 export function main(): void {
-  const userProps = PropertiesService.getUserProperties();
-  const scriptProps = PropertiesService.getScriptProperties();
-
-  const feedUrl = scriptProps.getProperty("FEED_URL");
-  const sheetName = scriptProps.getProperty("SHEET_NAME");
-  if (feedUrl == null) {
-    scriptPropNotFound("FEED_URL");
-    return;
-  }
-  if (sheetName == null) {
-    scriptPropNotFound("SHEET_NAME");
-    return;
-  }
+  const feedUrl = getPropertyOrThrow("FEED_URL");
+  const sheetName = getPropertyOrThrow("SHEET_NAME");
 
   const feedManager = new FeedManager(feedUrl);
   const sheetManager = new SheetManager(sheetName);
@@ -33,4 +18,13 @@ export function main(): void {
     "Added " + newEntries.length.toString() + " new entries to the Sheet."
   );
   Logger.log(newEntries);
+}
+
+function getPropertyOrThrow(propertyName: string): string {
+  const property =
+    PropertiesService.getScriptProperties().getProperty(propertyName);
+  if (property == null) {
+    throw Error("Failed to get the script property " + propertyName);
+  }
+  return property;
 }

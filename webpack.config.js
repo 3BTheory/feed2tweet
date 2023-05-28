@@ -2,7 +2,7 @@ const path = require("path");
 const GasPlugin = require("gas-webpack-plugin");
 
 module.exports = {
-  mode: "development",
+  mode: "production",
   devtool: false,
   context: __dirname,
   entry: "./src/index.ts",
@@ -11,7 +11,7 @@ module.exports = {
     filename: "index.js",
   },
   resolve: {
-    extensions: [".ts"],
+    extensions: [".ts", ".js"],
   },
   module: {
     rules: [

@@ -2,6 +2,8 @@ import { FeedManager, FeedEntry } from "./feedManager";
 import { SheetManager } from "./sheetManager";
 import { TwitterClient } from "./twitterClient";
 
+const twitterText = require("twitter-text");
+
 export function main(): void {
   const feedUrl = getPropertyOrThrow("FEED_URL");
   const sheetName = getPropertyOrThrow("SHEET_NAME");
@@ -35,17 +37,13 @@ export function main(): void {
 
 function formatTweet(entry: FeedEntry) {
   const summary = entry["summary"];
-  const url = entry["url"];
+  const url = entry["url"] + "?utm_source=gas_auto_post&utm_medium=twitter";
 
-  let summaryWithUrl: string;
-  if (summary.length > 110) {
-    summaryWithUrl = summary.substring(0, 110) + "... " + url;
-  } else {
-    const urlTagged = url + "?utm_source=gas_auto_post&utm_medium=twitter";
-    summaryWithUrl = summary + " " + urlTagged;
-  }
+  const maybeLongTweet = url + " " + summary;
 
-  return summaryWithUrl;
+  const parseResults = twitterText.parseTweet(maybeLongTweet);
+  if (parseResults.valid) return maybeLongTweet;
+  return maybeLongTweet.substring(0, parseResults.validRangeEnd - 3) + "...";
 }
 
 function getPropertyOrThrow(propertyName: string): string {

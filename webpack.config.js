@@ -5,7 +5,7 @@ module.exports = {
   mode: "development",
   devtool: false,
   context: __dirname,
-  entry: "./src/main.ts",
+  entry: "./src/index.ts",
   output: {
     path: path.join(__dirname, "dist"),
     filename: "index.js",

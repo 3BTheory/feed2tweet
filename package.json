@@ -4,12 +4,19 @@
   "description": "",
   "main": "main.ts",
   "scripts": {
+    "build": "webpack && cp ./src/appsscript.json ./dist/appsscript.json",
+    "push": "npm run build && clasp push",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@types/google-apps-script": "^1.0.64"
+  "dependencies": {},
+  "devDependencies": {
+    "@types/google-apps-script": "^1.0.64",
+    "gas-webpack-plugin": "^2.5.0",
+    "ts-loader": "^9.4.3",
+    "webpack": "^5.84.1",
+    "webpack-cli": "^5.1.1"
   }
 }

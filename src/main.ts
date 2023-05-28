@@ -1,7 +1,6 @@
 import { FeedManager, FeedEntry } from "./feedManager";
 import { SheetManager } from "./sheetManager";
 import { TwitterClient } from "./twitterClient";
-
 const twitterText = require("twitter-text");
 
 export function main(): void {
@@ -41,7 +40,7 @@ function formatTweet(entry: FeedEntry) {
 
   const maybeLongTweet = url + " " + summary;
 
-  const parseResults = twitterText.parseTweet(maybeLongTweet);
+  const parseResults = twitterText.default.parseTweet(maybeLongTweet);
   if (parseResults.valid) return maybeLongTweet;
   return maybeLongTweet.substring(0, parseResults.validRangeEnd - 3) + "...";
 }

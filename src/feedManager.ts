@@ -1,4 +1,4 @@
-type FeedEntry = {
+export type FeedEntry = {
   id: string;
   url: string;
   published: string;

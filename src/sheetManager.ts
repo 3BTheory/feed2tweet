@@ -1,4 +1,5 @@
-type SheetEntry = {
+import { FeedEntry } from "./feedManager";
+export type SheetEntry = {
   id: string;
   url: string;
   published: string;
@@ -45,7 +46,7 @@ export class SheetManager {
     return newEntries.length;
   }
 
-  addNewEntries(entries: SheetEntry[]): SheetEntry[] {
+  addNewEntries(entries: FeedEntry[]): FeedEntry[] {
     const existingIds = new Set(this.getAllEntries().map((x) => x["id"]));
     const newEntries = entries.filter((entry) => !existingIds.has(entry["id"]));
     this.addEntries(newEntries);

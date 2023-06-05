@@ -42,7 +42,12 @@ function formatTweet(entry: FeedEntry) {
 
   const parseResults = twitterText.default.parseTweet(maybeLongTweet);
   if (parseResults.valid) return maybeLongTweet;
-  return maybeLongTweet.substring(0, parseResults.validRangeEnd - 3) + "...";
+
+  const trancated = maybeLongTweet.substring(
+    url.length + 1,
+    parseResults.validRangeEnd - 3
+  );
+  return trancated + "... " + url;
 }
 
 function getPropertyOrThrow(propertyName: string): string {

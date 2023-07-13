@@ -94,10 +94,14 @@ export class TwitterClient {
     }
   }
 
-  postTweet(tweet: string) {
+  postTweet(tweet: string, inReplyTo?: string) {
     var payload = {
       text: tweet,
     };
+
+    if (inReplyTo != undefined) {
+      Object.assign(payload, { reply: { in_reply_to_tweet_id: inReplyTo } });
+    }
 
     var service = this.getService();
     if (service?.hasAccess()) {
@@ -113,9 +117,26 @@ export class TwitterClient {
       });
       var result = JSON.parse(response.getContentText());
       Logger.log(JSON.stringify(result, null, 2));
-    } else {
-      Logger.log("No access to Twitter. Authorizing.");
-      this.authorize();
+      return result;
+    }
+    Logger.log("No access to Twitter. Authorizing.");
+    this.authorize();
+    return undefined;
+  }
+
+  postThread(tweetList: string[]) {
+    let response = this.postTweet(tweetList[0]);
+    if (response == undefined) {
+      Logger.log("Error in sending the first tweet");
+      return;
+    }
+    for (let index = 1; index < tweetList.length; index++) {
+      const tweet = tweetList[index];
+      response = this.postTweet(tweet, response.data.id);
+      if (response == undefined) {
+        Logger.log("Error in sending a reply");
+        return;
+      }
     }
   }
 }

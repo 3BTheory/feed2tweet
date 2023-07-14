@@ -28,9 +28,9 @@ export function main(): void {
 
   const client = createTwitterClient();
   newEntries.forEach((entry) => {
-    const tweetString = formatTweet(entry);
-    client.postTweet(tweetString);
-    Logger.log(tweetString);
+    const tweetStringList = formatLongTweet(entry);
+    client.postThread(tweetStringList);
+    Logger.log(tweetStringList);
   });
 }
 

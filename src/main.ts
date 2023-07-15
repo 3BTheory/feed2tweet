@@ -112,13 +112,14 @@ function formatLongTweet(entry: FeedEntry) {
     return [summary + " " + url];
   }
 
-  const trancated = maybeLongTweet.substring(
-    url.length + 1,
-    parseResults.validRangeEnd - 3
+  const trancateIndex = getMostSegments(
+    maybeLongTweet,
+    parseResults.validRangeEnd - 7
   );
-  let rest = maybeLongTweet.substring(parseResults.validRangeEnd - 3);
+  const trancated = maybeLongTweet.substring(url.length + 1, trancateIndex);
+  let rest = "続き：" + maybeLongTweet.substring(trancateIndex);
 
-  const tweetList = [trancated + "... " + url];
+  const tweetList = [trancated + " (続く) " + url];
 
   while (rest.length > 0) {
     const parseResults = twitterText.default.parseTweet(rest);
@@ -126,9 +127,40 @@ function formatLongTweet(entry: FeedEntry) {
       tweetList.push(rest);
       break;
     }
-    const trancated = rest.substring(0, parseResults.validRangeEnd - 3);
-    tweetList.push(trancated + "...");
-    rest = rest.substring(parseResults.validRangeEnd - 3);
+    const trancateIndex = getMostSegments(rest, parseResults.validRangeEnd - 6);
+    const trancated = rest.substring(0, trancateIndex);
+    tweetList.push(trancated + " (続く)");
+    rest = "続き：" + rest.substring(trancateIndex);
   }
   return tweetList;
+}
+
+function getMostSegments(
+  text: string,
+  maxIndex: number,
+  mode: "auto" | "sentence" | "word" = "auto"
+): number {
+  let granularity = mode == "auto" ? "sentence" : mode;
+
+  const segmenter = new Intl.Segmenter("ja-JP", { granularity: granularity });
+  const segments = Array.from(segmenter.segment(text));
+
+  let maxSegmentIndex = -1;
+  for (let i = 1; i < segments.length; ++i) {
+    if (segments[i].index > maxIndex) {
+      maxSegmentIndex = i - 1;
+      break;
+    }
+  }
+
+  if (maxSegmentIndex > 0) {
+    return segments[maxSegmentIndex].index;
+  }
+  if (maxSegmentIndex == -1) {
+    const lastSegment = segments.pop();
+    if (lastSegment) return lastSegment.index;
+    return -1;
+  }
+  if (mode == "auto") return getMostSegments(text, maxIndex, "word");
+  return -1;
 }
